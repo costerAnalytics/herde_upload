@@ -24,9 +24,11 @@ for(variabele in c(
 herde_backup_folder <- Sys.getenv('herde_backup_folder')
 temp_herde_folder <- Sys.getenv('temp_herde_folder')
 
-zip_file <- dir(path = herde_backup_folder, pattern = '.zip')[1]
+zip_file <- dir(path = herde_backup_folder, pattern = '.zip')#[1]
+zip_file <- zip_file[substr(zip_file, 1, 6) == 'herde_']
+zip_file <- zip_file[length(zip_file)]
 zip_file <- paste0(herde_backup_folder, zip_file)
-system(paste0(r"(c:\windows\system32\tar.exe -C )", herde_backup_folder, " -xf ", zip_file))
+unzip(zip_file, overwrite = TRUE, exdir = temp_herde_folder)
 system(paste0(r"(c:\firebird\gbak -REP -c )", herde_backup_folder, "HerdeW.fbk ", temp_herde_folder, Sys.getenv('herde_backup_db'), ".fdb"))
 
 odbc_herde <- odbcConnect(Sys.getenv('herde_backup_db'), 
