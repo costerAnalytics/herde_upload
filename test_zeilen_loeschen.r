@@ -5,8 +5,8 @@ options(warn = 2)
 library(RPostgres)
 library(dotenv)
 load_dot_env()
-
-pg_schema <- paste0('test_herde_', DATABASE)
+betrieb <- Sys.getenv('betrieb')
+pg_schema <- paste0('test_herde_', betrieb)
 
 pgdb <- dbConnect(Postgres(), host = Sys.getenv('pg_host'),
 	dbname = Sys.getenv('pg_dbname'),
@@ -21,17 +21,14 @@ tabellen <- c(
   'hw_kalbung',
   'hw_laktation',
   'hw_besamung',
-  'hw_zstatus',
-  'hw_schluessel',
   'hw_tu',
   'hw_techtag',
-  'hw_gesundheit',
-  'hw_schl_gesund')
+  'hw_gesundheit')
 
 for(tabel in tabellen){
 	print(tabel)
 	pg_tabel <- paste0(pg_schema, '.', tabel)
 	max_id <- dbGetQuery(pgdb, paste0('select max(id) from ', pg_tabel))[1,1]
-	dbExecute(pgdb, paste0('delete from ', pg_tabel, ' where id > ', max_id - 1000))
+	dbExecute(pgdb, paste0('delete from ', pg_tabel, ' where id > ', max_id - 200))
 }
 dbDisconnect(pgdb)
