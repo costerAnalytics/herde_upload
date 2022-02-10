@@ -11,7 +11,7 @@ load_dot_env()
 
 
 log_to_file <- function(x){
-  file <- paste0('log_', as.Date(Sys.time()), '.txt')
+  file <- paste0(temp_herde_folder, '/log/log_', as.Date(Sys.time()), '.txt')
   cat(paste0(format(Sys.time(), '%H:%M:%S'),'\t', x, '\n'), file = file, append = TRUE)
 }
 
@@ -52,7 +52,7 @@ pgdb <- dbConnect(Postgres(), host = Sys.getenv('pg_host'),
 	dbname = Sys.getenv('pg_dbname'),
 	user = Sys.getenv('pg_user'), pass=Sys.getenv('pg_pwd'))
 
-tabellen <- sqlTables(herde)
+tabellen <- sqlTables(odbc_herde)
 tabellen <- tabellen[tabellen$TABLE_TYPE == 'TABLE',]
 tabellen <- tabellen$TABLE_NAME
 tabellen <- tolower(tabellen)
