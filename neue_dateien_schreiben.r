@@ -16,18 +16,18 @@ log_to_file <- function(x){
 }
 
 for(variabele in c(
-'herde_backup_folder',
-'temp_herde_folder',
-'herde_backup_db',
-'herde_uid',
-'herde_pwd',
-'pg_host',
-'pg_dbname',
-'pg_user',
-'pg_pwd', 
-'pg_schema',
-'betrieb',
-'gbak'
+	'herde_backup_folder',
+	'temp_herde_folder',
+	'herde_backup_db',
+	'herde_uid',
+	'herde_pwd',
+	'pg_host',
+	'pg_dbname',
+	'pg_user',
+	'pg_pwd', 
+	'pg_schema',
+	'betrieb',
+	'gbak'
 )){
 	if(Sys.getenv(variabele) == '') stop(paste0('Es fehlt Systemvariabele ', variabele))
 }
@@ -37,7 +37,7 @@ temp_herde_folder <- Sys.getenv('temp_herde_folder')
 pg_schema <- Sys.getenv('pg_schema')
 betrieb <- Sys.getenv('betrieb')
 
-zip_file <- dir(path = herde_backup_folder, pattern = '.zip')#[1]
+zip_file <- dir(path = herde_backup_folder, pattern = '.zip')
 zip_file <- zip_file[substr(zip_file, 1, 6) == 'herde_']
 zip_file <- zip_file[length(zip_file)]
 zip_file <- paste0(herde_backup_folder, zip_file)
@@ -52,19 +52,11 @@ pgdb <- dbConnect(Postgres(), host = Sys.getenv('pg_host'),
 	dbname = Sys.getenv('pg_dbname'),
 	user = Sys.getenv('pg_user'), pass=Sys.getenv('pg_pwd'))
 
-tabellen <- c(
-  'hw_bestand',
-  'hw_ort',
-  'hw_bewegung',
-  'hw_kalbung',
-  'hw_laktation',
-  'hw_besamung',
-  'hw_zstatus',
-  'hw_schluessel',
-  'hw_tu',
-  'hw_techtag',
-  'hw_gesundheit',
-  'hw_schl_gesund')
+tabellen <- sqlTables(herde)
+tabellen <- tabellen[tabellen$TABLE_TYPE == 'TABLE',]
+tabellen <- tabellen$TABLE_NAME
+tabellen <- tolower(tabellen)
+tabellen <- tabellen[!grepl("$", tabellen, fixed = TRUE)]
 
 querpg <- function(...) dbGetQuery(pgdb, paste0(...))
 querherde <- function(...) sqlQuery(odbc_herde, paste0(...))
@@ -118,7 +110,8 @@ for(tabel in tabellen){
 	})
 }
 
-if(!is.null(monaten_neu)){
+# Work in progress: taeglisch Betriebsauswertung aktualisieren. Wird noch nicht ausgefuehrt.
+if(FALSE && !is.null(monaten_neu)){
   monaten_neu <- monaten_neu |> 
     filter(!is.na(jahr)) |>
     distinct() |>
@@ -132,7 +125,7 @@ if(!is.null(monaten_neu)){
       jahr > baus_min$jahr || monat > baus_min$monat))
 }
 
-if(!is.null(monaten_neu) && nrow(monaten_neu) > 0){
+if(FALSE && !is.null(monaten_neu) && nrow(monaten_neu) > 0){
   for(i in 1:nrow(monaten_neu)){
     jahr <- monaten_neu$jahr[i]
     monat <- monaten_neu$monat[i]
