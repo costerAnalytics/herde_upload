@@ -27,7 +27,8 @@ for(variabele in c(
 	'pg_pwd', 
 	'pg_schema',
 	'betrieb',
-	'gbak'
+	'gbak',
+	'betrieb_code'
 )){
 	if(Sys.getenv(variabele) == '') stop(paste0('Es fehlt Systemvariabele ', variabele))
 }
@@ -36,9 +37,10 @@ herde_backup_folder <- Sys.getenv('herde_backup_folder')
 temp_herde_folder <- Sys.getenv('temp_herde_folder')
 pg_schema <- Sys.getenv('pg_schema')
 betrieb <- Sys.getenv('betrieb')
+betrieb_code <- Sys.getenv('betrieb_code')
 
 zip_file <- dir(path = herde_backup_folder, pattern = '.zip')
-zip_file <- zip_file[substr(zip_file, 1, 6) == 'herde_']
+zip_file <- zip_file[substr(zip_file, 1, 14) == paste0('herde_', betrieb_code)]
 zip_file <- zip_file[length(zip_file)]
 zip_file <- paste0(herde_backup_folder, zip_file)
 unzip(zip_file, overwrite = TRUE, exdir = temp_herde_folder)
