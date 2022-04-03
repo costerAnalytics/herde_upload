@@ -140,10 +140,10 @@ if(FALSE && !is.null(monaten_neu) && nrow(monaten_neu) > 0){
     
     if(!bestehend){
       log_to_file(str_glue('update betriebsauswertung_{betrieb}: ({jahr}, {monat})'))
-      insert_betriebsauswertung(betrieb = betrieb, pg_schema = pg_schema, jahr = jahr, monat = monat, db = db)
+      insert_betriebsauswertung(betrieb = betrieb, pg_schema = pg_schema, jahr = jahr, monat = monat, db = pgdb)
     } else{
       log_to_file(str_glue('insert betriebsauswertung_{betrieb}: ({jahr}, {monat})'))
-      update_betriebsauswertung(betrieb = betrieb, pg_schema = pg_schema, jahr = jahr, monat = monat, db = db)
+      update_betriebsauswertung(betrieb = betrieb, pg_schema = pg_schema, jahr = jahr, monat = monat, db = pgdb)
     }
   }
 }

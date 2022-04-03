@@ -24,7 +24,7 @@ update {betriebsauswertung_schema}.{betriebsauswertung_tabel} set
 	anzahl_totgeburten = bta.anzahl_totgeburten,
 	anzahl_totgeburten_faersen = bta.anzahl_totgeburten_faersen,
 	anzahl_mastitis_erstbehandlung = bta.anzahl_mastitis_erstbehandlung,
-	anzahl_mastitis_behandlung = bta.anzahl_mastitis_behandlung,
+	anzahl_mastitis_nachbehandlung = bta.anzahl_mastitis_nachbehandlung,
 	anzahl_nachgeburtsverhaltung = bta.anzahl_nachgeburtsverhaltung,
 	anzahl_lm = bta.anzahl_lm,
 	anzahl_gebaerparese = bta.anzahl_gebaerparese
