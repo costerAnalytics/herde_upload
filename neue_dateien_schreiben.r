@@ -65,7 +65,7 @@ querherde <- function(...) sqlQuery(odbc_herde, paste0(...))
 
 monaten_neu <- NULL # data.frame mit (Jahr, Monat) die neu sind.
 
-log_to_file('Herde file: ', zip_file)
+log_to_file(paste0('Herde file: ', zip_file))
 
 for(tabel in tabellen){
 	cat(tabel)
