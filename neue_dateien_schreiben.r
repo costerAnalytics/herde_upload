@@ -75,7 +75,7 @@ for(tabel in tabellen){
 		max_neu_id <- querherde('select max(id) from ', tabel)[1, 1]
 		if(is.na(max_neu_id) || max_neu_id == max_alt_id){
 			cat(': keine neue Dateien\n')
-		  log_to_file(paste0(tabel, ': 0 neue Spalten'))
+		  log_to_file(paste0(tabel, ': 0 neue Reihen'))
 		  next # naechste Tabel, weil es keine neue Dateien gibt.
 		}
 
@@ -102,11 +102,11 @@ for(tabel in tabellen){
 		  monaten_neu <- rbind(monaten_neu, neue_monaten_aux)
 		}
 
-		cat(paste0(': ', nrow(dat), ' neue Spalten schreiben... '))
+		cat(paste0(': ', nrow(dat), ' neue Reihen schreiben... '))
 		dbWriteTable(pgdb, name = DBI::SQL(paste0(pg_schema, ".", tabel)),
 			value = dat, row.names = FALSE, append = TRUE)
 		cat('ok\n\n')
-		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Spalten'))
+		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Reihen'))
 	}, error = \(e){
 	  cat(e$message)
 	  cat('\n')
