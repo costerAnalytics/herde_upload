@@ -26,7 +26,7 @@ insert into {betriebsauswertung_schema}.{betriebsauswertung_tabel}(
 	anzahl_totgeburten,
 	anzahl_totgeburten_faersen,
 	anzahl_mastitis_erstbehandlung,
-	anzahl_mastitis_behandlung,
+	anzahl_mastitis_nachbehandlung,
 	anzahl_nachgeburtsverhaltung,
 	anzahl_lm,
 	anzahl_gebaerparese)
