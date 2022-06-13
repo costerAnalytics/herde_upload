@@ -68,15 +68,17 @@ monaten_neu <- NULL # data.frame mit (Jahr, Monat) die neu sind.
 log_to_file(paste0('Herde file: ', zip_file))
 
 for(tabel in tabellen){
+	if(tabel %in% c('hw_bestand', 'hw_bestand_cache', 'hw_bestand_cache_ort', 'hw_bestand_cache_technik')) next	# Will be dealt with separately later
 	cat(tabel)
+
 	tryCatch({
 		max_alt_id <- querpg('select max(id) from ', pg_schema, '.', tabel)[1, 1]
 		if(is.na(max_alt_id)) max_alt_id <- 0
 		max_neu_id <- querherde('select max(id) from ', tabel)[1, 1]
 		if(is.na(max_neu_id) || max_neu_id == max_alt_id){
 			cat(': keine neue Dateien\n')
-		  log_to_file(paste0(tabel, ': 0 neue Reihen'))
-		  next # naechste Tabel, weil es keine neue Dateien gibt.
+			log_to_file(paste0(tabel, ': 0 neue Reihen'))
+			next # naechste Tabel, weil es keine neue Dateien gibt.
 		}
 
 		kolommen <- sqlColumns(odbc_herde, tabel)
@@ -113,6 +115,44 @@ for(tabel in tabellen){
 	  log_to_file(paste0(tabel, ': ', e$message))
 	})
 }
+
+for(tabel in c('hw_bestand', 'hw_bestand_cache', 'hw_bestand_cache_ort', 'hw_bestand_cache_technik')){
+	cat(tabel)
+
+	tryCatch({
+		kolommen <- sqlColumns(odbc_herde, tabel)
+		kolommen <- kolommen %>% select(kolom = COLUMN_NAME, type = TYPE_NAME)
+		kolommen <- kolommen %>% filter(!grepl('BLOB', type))
+		query <- paste(kolommen$kolom, collapse = ',')
+		query <- paste('select ', query, ' from ', tabel, ' order by id')
+		dat <- querherde(query)
+
+		# Richtige Type fuer jede Zeile:
+		integers <- kolommen$kolom[kolommen$type %in% c('BIGINT','INTEGER', 'SMALLINT')]
+		datums <- kolommen$kolom[kolommen$type == 'DATE']
+		for(k in integers) dat[,k] <- as.integer(dat[,k])
+		for(k in datums) dat[,k] <- as.Date(dat[,k])
+
+		colnames(dat) <- tolower(colnames(dat))
+
+		cat(paste0(': ', nrow(dat), ' neue Reihen schreiben... '))
+		dbWriteTable(pgdb, name = DBI::SQL(paste0(pg_schema, ".", tabel)),
+			value = dat, row.names = FALSE, over = TRUE, append = FALSE)
+		cat('ok\n\n')
+		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Reihen'))
+	}, error = \(e){
+	  cat(e$message)
+	  cat('\n')
+	  log_to_file(paste0(tabel, ': ', e$message))
+	})
+}
+
+
+
+
+
+
+
 
 # Work in progress: taeglisch Betriebsauswertung aktualisieren. Wird noch nicht ausgefuehrt.
 if(FALSE && !is.null(monaten_neu)){
