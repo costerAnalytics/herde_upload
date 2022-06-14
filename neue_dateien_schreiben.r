@@ -137,7 +137,7 @@ for(tabel in c('hw_bestand', 'hw_bestand_cache', 'hw_bestand_cache_ort', 'hw_bes
 
 		cat(paste0(': ', nrow(dat), ' neue Reihen schreiben... '))
 		dbWriteTable(pgdb, name = DBI::SQL(paste0(pg_schema, ".", tabel)),
-			value = dat, row.names = FALSE, over = TRUE, append = FALSE)
+			value = dat, row.names = FALSE, overwrite = TRUE, append = FALSE)
 		cat('ok\n\n')
 		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Reihen'))
 	}, error = \(e){
