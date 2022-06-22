@@ -28,7 +28,8 @@ for(variabele in c(
 	'pg_schema',
 	'betrieb',
 	'gbak',
-	'betrieb_code'
+	'betrieb_code',
+	'authorized_users'
 )){
 	if(Sys.getenv(variabele) == '') stop(paste0('Es fehlt Systemvariabele ', variabele))
 }
@@ -38,6 +39,8 @@ temp_herde_folder <- Sys.getenv('temp_herde_folder')
 pg_schema <- Sys.getenv('pg_schema')
 betrieb <- Sys.getenv('betrieb')
 betrieb_code <- Sys.getenv('betrieb_code')
+authorized_users <- Sys.getenv('authorized_users')
+authorized_users <- strsplit(authorized_users, ',')[[1]]
 
 zip_file <- dir(path = herde_backup_folder, pattern = '.zip')
 zip_file <- zip_file[substr(zip_file, 1, 14) == paste0('herde_', betrieb_code)]
@@ -108,6 +111,9 @@ for(tabel in tabellen){
 		dbWriteTable(pgdb, name = DBI::SQL(paste0(pg_schema, ".", tabel)),
 			value = dat, row.names = FALSE, append = TRUE)
 		cat('ok\n\n')
+		for(auth_user in authorized_users){
+		  dbExecute(pgdb, paste0('grant all on ', pg_schema, '.', tabel, ' to ', auth_user))
+		}
 		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Reihen'))
 	}, error = \(e){
 	  cat(e$message)
@@ -139,6 +145,9 @@ for(tabel in c('hw_bestand', 'hw_bestand_cache', 'hw_bestand_cache_ort', 'hw_bes
 		dbWriteTable(pgdb, name = DBI::SQL(paste0(pg_schema, ".", tabel)),
 			value = dat, row.names = FALSE, overwrite = TRUE, append = FALSE)
 		cat('ok\n\n')
+		for(auth_user in authorized_users){
+		  dbExecute(pgdb, paste0('grant all on ', pg_schema, '.', tabel, ' to ', auth_user))
+		}
 		log_to_file(paste0(tabel, ': ', nrow(dat), ' neue Reihen'))
 	}, error = \(e){
 	  cat(e$message)
